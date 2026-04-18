@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Chai ❤️</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Georgia', serif;
+  background: linear-gradient(to bottom, #fff0f5, #ffe4e1);
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+h1 {
+  text-align: center;
+  margin: 20px;
+  color: #b03060;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  padding: 20px;
+}
+
+.envelope {
+  width: 140px;
+  height: 100px;
+  background: #ffb6c1;
+  position: relative;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50px;
+  background: #ff8fab;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  transform-origin: top;
+  transition: transform 0.5s;
+}
+
+.envelope.open .flap {
+  transform: rotateX(180deg);
+}
+
+.locked { opacity: 0.5; }
+
+.letter {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  background: #fffaf0;
+  padding: 25px;
+  width: 85%;
+  max-width: 340px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  transition: transform 0.4s ease;
+  text-align: left;
+  font-family: 'Dancing Script', cursive;
+  font-size: 20px;
+  line-height: 1.6;
+  white-space: pre-line;
+  max-height: 80vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.letter.show {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.close {
+  margin-top: 15px;
+  cursor: pointer;
+  color: #b03060;
+  text-align: center;
+  font-family: sans-serif;
+}
+
+.petal {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: pink;
+  border-radius: 50%;
+  opacity: 0.7;
+  animation: fall linear infinite;
+}
+
+@keyframes fall {
+  0% { transform: translateY(-10px); }
+  100% { transform: translateY(100vh); }
+}
+
+/* HEART FINAL BUTTON */
+.finalHeart {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 60px;
+  cursor: pointer;
+  display: none;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.2); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>For Chai 💌</h1>
+
+<audio id="bgMusic" autoplay loop>
+  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="voiceNote">
+  <source src="voice.mp3" type="audio/mpeg">
+</audio>
+
+<div class="container" id="container"></div>
+
+<div class="letter" id="letterBox">
+  <div id="poemText"></div>
+  <div class="close" onclick="closeLetter()">close</div>
+</div>
+
+<div class="finalHeart" id="finalHeart" onclick="openFinal()">❤️</div>
+
+<script>
+const poems = [
+`Chai…\nI see the way your chest tightens when the world gets too loud...`,
+`Chai, if I could hold your thoughts I would replace them with peace...`,
+`You don’t have to apologize, even broken light still shines...`,
+`If your world collapses, I will stay with you...`,
+`Chai, nothing about you makes me want to leave...`,
+`You think you’re too much, but you are everything...`,
+`I love you most when you're breaking...`,
+`If your thoughts get loud, come sit with me...`,
+`You are not a burden, Chai...`,
+`If you feel like disappearing, come to me first...`
+];
+
+const finalPoem = `❤️\n\nChai…\n\nIf you’re reading this, it means you reached the end of every piece of me.\n\nI love you.\nNot when it’s easy. Not when it’s convenient.\n\nI love you when you’re breaking, when you’re lost, when you feel like disappearing.\n\nBecause losing you is something I would never survive quietly.\n\nSo if you ever feel like you’re too much…\ncome back here.\ncome back to me.\n\nBecause Chai…\nI’m still here.\nAnd I’m not going anywhere.`;
+
+const container = document.getElementById("container");
+let openedCount = 0;
+
+for (let i = 0; i < 10; i++) {
+  const env = document.createElement("div");
+  env.className = "envelope locked";
+
+  const label = document.createElement("div");
+  label.innerText = i + 1;
+  label.style.position = "absolute";
+  label.style.bottom = "5px";
+  label.style.right = "8px";
+  label.style.color = "white";
+  label.style.fontWeight = "bold";
+
+  env.innerHTML = '<div class="flap"></div>';
+  env.appendChild(label);
+
+  env.onclick = () => {
+    if (i > openedCount) return;
+    env.classList.add("open");
+    openLetter(i);
+    openedCount = Math.max(openedCount, i + 1);
+
+    if (openedCount === 10) {
+      document.getElementById("finalHeart").style.display = "block";
+    }
+  };
+
+  container.appendChild(env);
+}
+
+function openLetter(index) {
+  document.getElementById("letterBox").classList.add("show");
+  document.getElementById("poemText").innerText = poems[index];
+}
+
+function openFinal() {
+  document.getElementById("letterBox").classList.add("show");
+  document.getElementById("poemText").innerText = finalPoem;
+  document.getElementById("voiceNote").play();
+}
+
+function closeLetter() {
+  document.getElementById("letterBox").classList.remove("show");
+}
+
+function createPetal() {
+  const petal = document.createElement("div");
+  petal.className = "petal";
+  petal.style.left = Math.random() * window.innerWidth + "px";
+  petal.style.animationDuration = (3 + Math.random() * 5) + "s";
+  document.body.appendChild(petal);
+  setTimeout(() => petal.remove(), 8000);
+}
+setInterval(createPetal, 300);
+
+</script>
+
+</body>
+</html>
